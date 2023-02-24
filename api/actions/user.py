@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from api.models import UserCreate, ShowUser
 from db.dals import UserDAL
 from hashing import Hasher
@@ -19,3 +21,10 @@ async def _create_new_user(body: UserCreate, session) -> ShowUser:
             email=user.email,
             is_active=user.is_active,
         )
+
+
+async def _delete_user(user_id, session) -> UUID | None:
+    async with session.begin():
+        user_dal = UserDAL(session)
+        deleted_user_id = await user_dal.delete_user(user_id=user_id)
+        return deleted_user_id
